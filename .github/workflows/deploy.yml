@@ -1,0 +1,32 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 18.157.180.48 >> ~/.ssh/known_hosts
+
+      - name: Deploy code
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@18.157.180.48 << 'EOF'
+            cd /home/ubuntu/DevProject || exit
+            git pull origin main
+            # Add build or deployment commands here if needed
+            # e.g., npm install && npm run build
+          EOF
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
