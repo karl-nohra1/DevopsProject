@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main  # Trigger on push to main branch
+      - main  # Trigger on push to the main branch
 
 jobs:
   deploy:
@@ -23,10 +23,18 @@ jobs:
       - name: Deploy code
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@18.157.180.48 << 'EOF'
+            # Ensure the deployment directory exists
+            mkdir -p /home/ubuntu/DevProject
+
+            # Change to the deployment directory
             cd /home/ubuntu/DevProject || exit
-            git pull origin main
-            # Add build or deployment commands here if needed
+
+            # Remove existing files (optional) before cloning
+            rm -rf /home/ubuntu/DevProject/*
+
+            # Clone the repository into the deployment directory
+            git clone https://github.com/karl-nohra1/DevopsProject.git /home/ubuntu/DevProject
+
+            # Optionally, add build commands or other deployment steps here
             # e.g., npm install && npm run build
           EOF
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
