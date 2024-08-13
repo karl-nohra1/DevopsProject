@@ -29,14 +29,12 @@ jobs:
             # Change to the deployment directory
             cd /home/ubuntu/DevProject || exit
 
-            # Ensure the directory is empty before cloning (optional)
-            rm -rf /home/ubuntu/DevProject/*
-
-            # Clone the repository or update if it already exists
-            if [ ! -d ".git" ]; then
-              git clone https://github.com/karl-nohra1/DevopsProject.git /home/ubuntu/DevProject
+            # If it's a git repository, pull the latest changes, otherwise clone it
+            if [ -d ".git" ]; then
+              git reset --hard HEAD  # Discard any local changes
+              git pull origin main    # Pull the latest changes
             else
-              git pull
+              git clone https://github.com/karl-nohra1/DevopsProject.git /home/ubuntu/DevProject
             fi
 
             # Optionally, add build commands or other deployment steps here
