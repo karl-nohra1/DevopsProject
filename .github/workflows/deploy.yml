@@ -29,11 +29,15 @@ jobs:
             # Change to the deployment directory
             cd /home/ubuntu/DevProject || exit
 
-            # Remove existing files (optional) before cloning
+            # Ensure the directory is empty before cloning (optional)
             rm -rf /home/ubuntu/DevProject/*
 
-            # Clone the repository into the deployment directory
-            git clone https://github.com/karl-nohra1/DevopsProject.git /home/ubuntu/DevProject
+            # Clone the repository or update if it already exists
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/karl-nohra1/DevopsProject.git /home/ubuntu/DevProject
+            else
+              git pull
+            fi
 
             # Optionally, add build commands or other deployment steps here
             # e.g., npm install && npm run build
